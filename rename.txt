@@ -1,7 +1,7 @@
 rename "Azure-Windows.txt" "AZure-Windows.ps1"
 rename "Azure-CLI.txt" "Azure-CLI.ps1"
 rename "Azure-Trigger.txt" "Azure-Trigger.ps1"
-rename "CMF-PostgreSQL_Server_Input_file.txt" "CMF-PostgreSQL_Server_Input_file.csv"
+rename "CMF-PostgreSQL_Server_Input_file.txt" "CMF-PostgreSQL_Server_Input_file.xlsx"
 rename "%cd%\PostgreSQL_Templates\pg_db_maintenance.txt" "pg_db_maintenance.sql"
 rename "%cd%\PostgreSQL_Templates\pg_db_gather_server.txt" "pg_db_gather_server.sql"
 rename "%cd%\PostgreSQL_Templates\pg_db_gather_db.txt" "pg_db_gather_db.sql"
