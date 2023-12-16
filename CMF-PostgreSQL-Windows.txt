@@ -46,7 +46,8 @@ $folder = $PSScriptRoot
 $Triggerpsql_File_Path=$Folder+"\Trigger_psql.bat"
 $date = Get-Date -Format "yy-dd-MM-hh-mm"
 $Log_Name= $Host_Name.replace(".", "_")
-$DbGather_Path=$Folder+"\PostgreSQL_Templates\pg_db_gather.sql"
+$DbGather_Path=$Folder+"\PostgreSQL_Templates\pg_db_gather_db.sql"
+$DbGather_Server_Path=$Folder+"\PostgreSQL_Templates\pg_db_gather_server.sql"
 $DetailedInfo_Path=$Folder+"\PostgreSQL_Templates\pg_db_maintenance.sql"
 $DbList_path=$Folder+"\PostgreSQL_Templates\DB_List.sql"
 
@@ -424,8 +425,14 @@ exitcode
 		   Add-Content $DBList_Log_File $parameter_listing
 		   continue
                 }
+
+                $DBlogServerfile=$Folder+"\Output\$Host_Name\" + $Global:project_name+ "_" + $Host_Name + "_Server" +".log"
+                $env:PGPASSWORD = $Password
+                $escapedDBCommand = "`"dbname=postgres sslmode=$SSL`""
+                $psqlCommand="psql --username=$User_ID --host=$Host_Name --port=$Port --file=$DbGather_Server_path $escapedDBCommand"
+                Invoke-Expression "$psqlCommand 2>&1 | Out-File -FilePath $DBlogServerfile"
                 Remove-Item Env:\PGPASSWORD
-   
+
      	        #excluding default databases
 	
 		$logcontent=@()
