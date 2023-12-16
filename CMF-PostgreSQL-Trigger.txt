@@ -20,7 +20,7 @@
 # Powershell.exe -File .\CMF_Azure_PostgreSQL_Trigger.ps1
 #
 $command = @"
-    powershell.exe -File .\CMF-Azure-PostgreSQL-Info-gathering.ps1
+    powershell.exe -File .\CMF-PostgreSQL-CLI.ps1
 "@
 
 cmd.exe /C $command
