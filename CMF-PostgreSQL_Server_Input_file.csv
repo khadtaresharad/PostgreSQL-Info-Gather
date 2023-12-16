@@ -1,4 +1,2 @@
 Host_Name,Resource_Group,Port,VCore,Auth_Type,User_ID,Password,DB_Name,tenant,Subscription_ID,Approval_Status,SSL_Mode
-cmfpostgresqltest.postgres.database.azure.com,RG-ALLRegion-Automation-Team,5432,2,PostgreSQL,pgtestuser@cmfpostgresqltest,Mindtree123!,postgres,8dc94566-ec40-4aad-abe0-739751b9d5b4,edf6dd9d-7c4a-4bca-a997-945f3d60cf4e,yes,disable
-cmfpostgresqlbasic.postgres.database.azure.com,RG-ALLRegion-Automation-Team,5432,2,PostgreSQL,sharad@cmfpostgresqlbasic,Y{}}-&$?|!,postgres,8dc94566-ec40-4aad-abe0-739751b9d5b5,edf6dd9d-7c4a-4bca-a997-945f3d60cf4e,yes,disable
-cmfpostgresqlbasicrepli.postgres.database.azure.com,RG-ALLRegion-Automation-Team,5432,2,PostgreSQL,pgtestuser@cmfpostgresqlbasicrepli,Mindtree123,postgres,8dc94566-ec40-4aad-abe0-739751b9d5b6,edf6dd9d-7c4a-4bca-a997-945f3d60cf4e,no,disable
+cmfpostgresqlbasic.postgres.database.azure.com,RG-ALLRegion-Automation-Team,5432,2,PostgreSQL,pgtestuser@cmfpostgresqlbasic,,postgres,MTTech2021outlook.onmicrosoft.com,edf6dd9d-7c4a-4bca-a997-945f3d60cf4e,Yes,disable
