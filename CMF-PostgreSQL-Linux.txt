@@ -225,7 +225,7 @@ else
          Write-Host "The file [$inputfile] does not have the woksheet named Server_List  "  -ForegroundColor Red  
          Write-Host "=================================================================================="  
          Write-Host "Please see the error below &execution has been stopped          "  
-         #throw $_.Exception.Message
+         throw $_.Exception.Message
      }
 
 if($ConfigList.count -eq 0){
@@ -351,9 +351,9 @@ exitcode
        continue
     }
 
-####$error_msg=Get-content -path $psql_Log_File | out-string
+    $error_msg=Get-content -path $psql_Log_File | out-string
     
-####$error_msg1=$error_msg.tolower()
+    $error_msg1=$error_msg.tolower()
 
     if (Test-Path $psql_Log_File) {
     
