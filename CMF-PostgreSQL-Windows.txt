@@ -506,6 +506,7 @@ exitcode
 		}
        }
        #Remove-Item $DBList_Log_File
+    }
 
        if (Test-Path $DBList_Log_File) {
 			$size = (Get-Item $DBList_Log_File).Length
@@ -547,7 +548,6 @@ exitcode
 		{
 			#$Output_data | select Host_Name,Status,LOG_File_Location,Error_Msg | Export-Excel $PSScriptRoot\Output\$Host_Name\Server_Status.xlsx -WorksheetName "PostgreSQL_Server" -TableStyle Medium16 -title "PostgreSQL Server Status" -TitleBold    
 		}
-    }
 
 Stop-Transcript
 exitcode
