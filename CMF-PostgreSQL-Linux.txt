@@ -506,11 +506,11 @@ exitcode
 		}
        }
        #Remove-Item $DBList_Log_File
-    }
+
 
        if (Test-Path $DBList_Log_File) {
-			$size = (Get-Item $DBList_Log_File).Length
-			if($size -gt 120) {
+			$size = Get-Content -Path $DBList_Log_File -Raw 
+			if($size -match "datname") {
 				Write-host "Information Gathered is stored at "$DBList_Log_File
 				Write-host "Info-Gathering Successfully  completed for " $Host_Name -ForegroundColor Green
     
@@ -534,6 +534,7 @@ exitcode
 			$Output_data += New-Object psobject -Property @{Host_Name=$Host_Name;Status="FAILED";LOG_File_Location="NA";Error_Msg="NA"}
 		}
 
+    }
          #Remove-Item $DBList_Log_File
 
 		Write-Host "" 
