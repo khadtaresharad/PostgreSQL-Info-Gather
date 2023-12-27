@@ -1,7 +1,7 @@
 rename "CMF-PostgreSQL-Windows.txt" "CMF-PostgreSQL-Windows.ps1"
 rename "CMF-PostgreSQL-Linux.txt" "CMF-PostgreSQL-Linux.ps1"
 rename "CMF-PostgreSQL-Trigger.txt" "CMF-PostgreSQL-Trigger.ps1"
-rename "CMF-PostgreSQL-CLI.txt" "CMF-PostgreSQL-CLI.ps1"
+rename "CMF-PostgreSQL-CLI-Windows.txt" "CMF-PostgreSQL-CLI-Windows.ps1"
 rename "CMF-PostgreSQL-CLI-Linux.txt" "CMF-PostgreSQL-CLI-Linux.ps1"
 rename "CMF-PostgreSQL_Server_Input_file.txt" "CMF-PostgreSQL_Server_Input_file.csv"
 rename "Server_List.txt" "Server_List.csv"
