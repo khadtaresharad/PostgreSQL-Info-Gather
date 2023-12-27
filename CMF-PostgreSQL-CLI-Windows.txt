@@ -20,7 +20,7 @@
 # Powershell.exe -File .\CMF-PostgreSQL-Trigger.ps1
 #
 $command = @"
-    powershell.exe -File .\CMF-PostgreSQL-Trigger.ps
+    powershell.exe -File .\CMF-PostgreSQL-Trigger.ps1
 "@
 
 cmd.exe /C $command
