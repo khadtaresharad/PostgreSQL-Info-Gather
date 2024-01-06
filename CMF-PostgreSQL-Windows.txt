@@ -182,7 +182,7 @@ else
   
 
 # Read the input config Excel and validate
-$inputfile = $PSScriptRoot+"\CMF-PostgreSQL_Server_Input_file.csv"
+$inputfile = $PSScriptRoot+"\CMF_PostgreSQL_Server_Input_file.csv"
 Write-Host "Input file is $inputfile." -ForegroundColor Green
 Write-Host "======================================================================================="
 

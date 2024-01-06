@@ -25,7 +25,7 @@
 •	Customer consent to install ImportExcel PS Module and Azure CLI
 •	Excluded Flexi server Azure CLI commands.
 •	Excluded Azure CLI commands Json file generation for single servers except Server list.
-•	Incorporated Vcore column in INPUT EXCEL  Sheet  CMF-PostgreSQL_Server_Input_file.xlsx file (Server_List Worksheet)
+•	Incorporated Vcore column in INPUT EXCEL  Sheet  CMF_PostgreSQL_Server_Input_file.xlsx file (Server_List Worksheet)
 •	Incorporated servername in DB_List, Config_Details,AD Admin and Firewall-rule List  CLI commands output in output.xlsx
 •	No column Filter applied when exporting AZURE CLI Commands output to output.xlsx file
 •	Included az postgres server replica list CLI
@@ -118,7 +118,7 @@ createFolder $folder\Output\Single\
  
 
 # Read the input config Excel and validate
-#$inputfile = $PSScriptRoot+"\CMF-PostgreSQL_Server_Input_file.xlsx" 
+#$inputfile = $PSScriptRoot+"\CMF_PostgreSQL_Server_Input_file.xlsx" 
 $inputfile = $PSScriptRoot+"\Azure_Subscription.csv"
 Write-Host "Input file is $inputfile " -ForegroundColor Green
 Write-Host "===================================================================="  
@@ -364,7 +364,7 @@ else
       $Logon_User=$Single_User_Name + "@" + $ser_dom
       $vcore=$i.sku.capacity
 
-      $Outfiledata+=New-Object psobject -Property @{Host_Name=$domain_name;Resource_Group=$ser_rg;Port="5432";VCore=$vcore;Auth_Type="PostgreSQL";User_ID=$Logon_User;Password="";DB_Name="postgres";Tenant=$tenant;Subscription_ID=$Subscription;Approval_Status=""}
+      $Outfiledata+=New-Object psobject -Property @{Host_Name=$domain_name;Resource_Group=$ser_rg;Port="5432";VCore=$vcore;Auth_Type="PostgreSQL";User_ID=$Logon_User;Password="";DB_Name="postgres";Tenant=$tenant;Subscription_ID=$Subscription;Approval_Status="No";SSL_Mode="prefer"}
           
     try
     {    
