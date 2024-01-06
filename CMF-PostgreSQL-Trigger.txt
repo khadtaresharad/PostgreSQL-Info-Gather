@@ -79,43 +79,43 @@ createFolder $folder\Output\Single\
 
 
 #Check for ImportExcel module
-Write-Host "======================================================================================="
-Write-Host "`nChecking for ImportExcel Module"
-if((Get-Module -ListAvailable).Name -notcontains "ImportExcel")
-{
-    Write-Host "Excel PS module not found.."  -BackgroundColor Red
-    Write-Host "=======================================================================================" 
-    $response = read-host "Do you want to continue download and install Excel PS Module? 'Y' or 'N' : "
-
-    if($response.ToUpper() -eq "Y")
-    {
-    Write-Host "Downloading ImportExcel PS Module..."
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-    try { Install-Module -Name ImportExcel} 
-            catch {
-
-               Write-Host "======================================================================================="  
-               Write-Host "Error while downloading Importexcel package , Please make sure computer is connected to internet "  -ForegroundColor Red  
-               Write-Host "Or "  -ForegroundColor Red 
-               Write-Host "Please install it manually "  -ForegroundColor Red   
-               Write-Host "======================================================================================="  
-               Write-Host "Please see the error below & execution has been stopped          " 
-            throw  $_.Exception.Response.StatusCode.Value__
-            }
-    
-    Write-Host "Downloaded."
-    }
-    else
-    {
-        Write-Host "Excel PS module is required for the execution. Exiting..."
-        exitCode
-    }
-    <#Expand-Archive "$folder\Downloads\ImportExcel.zip" "$folder\Downloads\"
-    move "$folder\Downloads\ImportExcel-7.8.0" "C:\Program Files\WindowsPowerShell\Modules\ImportExcel"
-    Import-Module ImportExcel#>
-}
-
+#Write-Host "======================================================================================="
+#Write-Host "`nChecking for ImportExcel Module"
+#if((Get-Module -ListAvailable).Name -notcontains "ImportExcel")
+#{
+#    Write-Host "Excel PS module not found.."  -BackgroundColor Red
+#    Write-Host "=======================================================================================" 
+#    $response = read-host "Do you want to continue download and install Excel PS Module? 'Y' or 'N' : "
+#
+#    if($response.ToUpper() -eq "Y")
+#    {
+#    Write-Host "Downloading ImportExcel PS Module..."
+#    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+#    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+#    try { Install-Module -Name ImportExcel} 
+#            catch {
+#
+#               Write-Host "======================================================================================="  
+#               Write-Host "Error while downloading Importexcel package , Please make sure computer is connected to internet "  -ForegroundColor Red  
+#               Write-Host "Or "  -ForegroundColor Red 
+#               Write-Host "Please install it manually "  -ForegroundColor Red   
+#               Write-Host "======================================================================================="  
+#               Write-Host "Please see the error below & execution has been stopped          " 
+#            throw  $_.Exception.Response.StatusCode.Value__
+#            }
+#    
+#    Write-Host "Downloaded."
+#    }
+#    else
+#    {
+#        Write-Host "Excel PS module is required for the execution. Exiting..."
+#        exitCode
+#    }
+#    <#Expand-Archive "$folder\Downloads\ImportExcel.zip" "$folder\Downloads\"
+#    move "$folder\Downloads\ImportExcel-7.8.0" "C:\Program Files\WindowsPowerShell\Modules\ImportExcel"
+#    Import-Module ImportExcel#>
+#}
+ 
 
 # Read the input config Excel and validate
 #$inputfile = $PSScriptRoot+"\CMF-PostgreSQL_Server_Input_file.xlsx" 
@@ -464,13 +464,12 @@ else
     Write-Host "Output file created ==> $PSScriptRoot\Output\Output.xlsx " -ForegroundColor Green -BackgroundColor Black
     Write-Host "==============================================================================================================" 
   
-  
-  
-
-
-    
     if($Outfiledata -ne $null){
     $Outfiledata | select Host_Name,Resource_Group,Port,VCore,Auth_Type,User_ID,Password,DB_Name,tenant,Subscription_ID,Approval_Status,SSL_Mode | Export-Csv $PSScriptRoot\Server_List.csv
+    $originalCsvFilePath = "$PSScriptRoot\Server_List.csv"
+    $newCsvFilePath = "$PSScriptRoot\CMF_PostgreSQL_Server_Input_file.csv"
+    $content = Get-Content -Path $originalCsvFilePath | Select-Object -Skip 1
+    $content | Set-Content -Path $newCsvFilePath
     }
     
 }  

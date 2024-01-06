@@ -464,13 +464,12 @@ else
     Write-Host "Output file created ==> $PSScriptRoot/Output/Output.xlsx " -ForegroundColor Green -BackgroundColor Black
     Write-Host "==============================================================================================================" 
   
-  
-  
-
-
-    
     if($Outfiledata -ne $null){
     $Outfiledata | select Host_Name,Resource_Group,Port,VCore,Auth_Type,User_ID,Password,DB_Name,tenant,Subscription_ID,Approval_Status,SSL_Mode | Export-Csv $PSScriptRoot/Server_List.csv
+    $originalCsvFilePath = "$PSScriptRoot/Server_List.csv"
+    $newCsvFilePath = "$PSScriptRoot/CMF_PostgreSQL_Server_Input_file.csv"
+    $content = Get-Content -Path $originalCsvFilePath
+    $content | Set-Content -Path $newCsvFilePath
     }
     
 }  
