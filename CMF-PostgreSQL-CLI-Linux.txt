@@ -461,7 +461,7 @@ else
 
     Write-Host "=============================================================================================================="  
     Write-Host "Information gathered ==> $folder/Output/Single/ " -ForegroundColor Green -BackgroundColor Black
-    Write-Host "Output file created ==> $PSScriptRoot/Output/Output.xlsx " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "Output file created ==> $PSScriptRoot/Output/Output.csv " -ForegroundColor Green -BackgroundColor Black
     Write-Host "==============================================================================================================" 
   
     if($Outfiledata -ne $null){

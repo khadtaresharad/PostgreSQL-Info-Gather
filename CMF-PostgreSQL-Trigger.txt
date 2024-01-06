@@ -451,17 +451,17 @@ else
       exitcode
       }
       }
-    $Serverdata| ForEach-Object {[PSCustomObject]$_}  | Export-Excel -Path $PSScriptRoot\Output\Output.xlsx -WorksheetName Server_List
-    $DBList| ForEach-Object {[PSCustomObject]$_} | Export-Excel -Path $PSScriptRoot\Output\Output.xlsx -WorksheetName DB_Details
-    $ServerConf| ForEach-Object {[PSCustomObject]$_} | Export-Excel -Path $PSScriptRoot\Output\Output.xlsx -WorksheetName Configuration_Data
-    $Admin| ForEach-Object {[PSCustomObject]$_} | Export-Excel -Path $PSScriptRoot\Output\Output.xlsx -WorksheetName AD_Admin
-    $Firewall| ForEach-Object {[PSCustomObject]$_} | Export-Excel -Path $PSScriptRoot\Output\Output.xlsx -WorksheetName FW_List
-    $Replica| ForEach-Object {[PSCustomObject]$_} | Export-Excel -Path $PSScriptRoot\Output\Output.xlsx -WorksheetName Replica_List
 
+    $Serverdata| ForEach-Object {[PSCustomObject]$_}  | Export-CSV -Path $PSScriptRoot\Output\Server_List.csv
+    $DBList| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot\Output\DB_Details.csv
+    $ServerConf| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot\Output\Configuration_Data.csv
+    $Admin| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot\Output\AD_Admin.csv
+    $Firewall| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot\Output\FW_List.csv
+    $Replica| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot\Output\Replica_List.csv
 
     Write-Host "=============================================================================================================="  
     Write-Host "Information gathered ==> $folder\Output\Single\ " -ForegroundColor Green -BackgroundColor Black
-    Write-Host "Output file created ==> $PSScriptRoot\Output\Output.xlsx " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "Output file created ==> $PSScriptRoot\Output\Output.csv " -ForegroundColor Green -BackgroundColor Black
     Write-Host "==============================================================================================================" 
   
     if($Outfiledata -ne $null){
