@@ -256,7 +256,13 @@ If($Validation.Status.Contains("FAILED"))
 		}elseif ($h.Value -is [Hashtable]){
 			CMF-Read-Nested-Hashtable $h.Name $h.Value
 		}else{
-			$global:row.Add($h.Name, $h.Value)
+                       $key = $h.Name
+                       if ($global:row.ContainsKey($key)) {
+                         $global:row[$key] = $h.Value
+                       }
+                       else {   
+			 $global:row.Add($key, $h.Value)
+                       }
 		}
 	}
 	$global:alldata += $global:row
@@ -271,7 +277,13 @@ If($Validation.Status.Contains("FAILED"))
             $newPrefix=-join($prefix,".",$h.Name)
 			CMF-Read-Nested-Hashtable $newPrefix $h.Value
 		}else{
-			$global:row.Add(-join($prefix,".",$h.Name), $h.Value)
+                       $key = -join @($prefix, ".", $h.Name)
+                       if ($global:row.ContainsKey($key)) {
+                         $global:row[$key] = $h.Value
+                       }
+                       else {   
+			 $global:row.Add($key, $h.Value)
+                       }
 		}
 	    }
     }
