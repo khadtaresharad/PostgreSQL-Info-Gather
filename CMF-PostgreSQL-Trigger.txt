@@ -157,9 +157,9 @@ else
      if (($ColumnList.Contains("Tenant")) -and
         ($ColumnList.Contains("Subscription_ID"))){
 
-        Write-Host "Excel validation is done successfully " 
+        Write-Host "CSV validation is done successfully " 
         }
-     else {Write-Host "There are mismatches in the Excel column . Kindly check and retrigger the automation "  -BackgroundColor Red
+     else {Write-Host "There are mismatches in the CSV column . Kindly check and retrigger the automation "  -BackgroundColor Red
            exitCode}
 
 $tenant=$ConfigList[0].'Tenant'
@@ -461,7 +461,7 @@ else
 
     Write-Host "=============================================================================================================="  
     Write-Host "Information gathered ==> $folder\Output\Single\ " -ForegroundColor Green -BackgroundColor Black
-    Write-Host "Output file created ==> $PSScriptRoot\Output\Output.csv " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "Output file created ==> $PSScriptRoot\Output\" -ForegroundColor Green -BackgroundColor Black
     Write-Host "==============================================================================================================" 
   
     if($Outfiledata -ne $null){
