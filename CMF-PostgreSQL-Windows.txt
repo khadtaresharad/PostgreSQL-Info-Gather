@@ -5,7 +5,7 @@
 #  Author         : Rackimuthu Kandaswamy , Sireesha , Lekshmy , Arun, Madan
 #  Version        : 1.1
 #   
-#  INPUTS         : Server List and other parameters in Excel file; SSL_Modes = allow, disable, prefer, require, verify-ca, verify-full
+#  INPUTS         : Server List and other parameters in CSV file; SSL_Modes = allow, disable, prefer, require, verify-ca, verify-full
 #  VARIABLE       : NONE
 #  PARENT         : NONE
 #  CHILD          : NONE
@@ -20,7 +20,7 @@
 # Powershell.exe -File .\CMF-PostgreSql_Server_Automation_V1.1.ps1
 #
 #change Log 31st July 2023 Sireesha Error Handling and PSQL validation 
-#change Log 10th Oct 2023 Lekshmy : Added Option 2 for detailed info gathering and output format for option 1 to excel multiple workbooks
+#change Log 10th Oct 2023 Lekshmy : Added Option 2 for detailed info gathering and output format for option 1 to CSV multiple workbooks
 
 
 CLS
@@ -119,69 +119,11 @@ createFolder $folder\Output\
 
 Write-Host ""
 Write-Host "======================================================================================= "
-
- Write-Host "Input Section "   -ForegroundColor Green
-<#Check for ImportExcel module
-Write-Host "======================================================================================= "
-Write-Host "Checking for ImportExcel Module"
-if((Get-Module -ListAvailable).Name -notcontains "ImportExcel")
-{
-    Write-Host "Excel PS module not found." -ForegroundColor red
-    $validInputs_Yes_No = @("y", "n","Y","N")
-     
-    Write-Host    "Please press 'Y' to continue download and install ImportExcel Module.Press 'N' to terminate the execution (Y or N) " -ForegroundColor Green
-    Write-Host "======================================================================================="
-    do {
-    $response = read-host "Please provide your inputs"
-    if(-not $validInputs_Yes_No.Contains($response)){write-host "Please Enter a valid input (Y or N )"}
-    
-    }until ($validInputs_Yes_No.Contains($response.ToLower()))
-
-    if ($response -eq "n")
-    {
-        exitcode
-    }          
-        if($response -eq "Y")
-        {
-    Write-Host "Downloading ImportExcel PS Module and install it. Please wait ..." -ForegroundColor Green
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-    try { Install-Module -Name ImportExcel} 
-            catch {
-
-               Write-Host "======================================================================================="
-               Write-Host "Error while downloading Importexcel package , Please make sure computer is connected to internet "  -ForegroundColor Red  
-               Write-Host "Or "  -ForegroundColor Red 
-               Write-Host "Please install it manually "  -ForegroundColor Red   
-               Write-Host "========================================================================================== "
-               Write-Host "Please see the error below & execution has been stopped          " 
-            throw  $_.Exception.Response.StatusCode.Value__
-            }
-    
-    Write-Host "Downloaded."
-    <#Expand-Archive "$folder\Downloads\ImportExcel.zip" "$folder\Downloads\"
-    move "$folder\Downloads\ImportExcel-7.8.0" "C:\Program Files\WindowsPowerShell\Modules\ImportExcel"
-    #Import-Module ImportExcel
-    if (find-module -Name "ImportExcel")
-    {
-        write-Host "ImportExcel Module installed successfully" -ForegroundColor Green
-    }
-    }
-    else
-    {
-    Write-Host "ImportExcel PS Module installation is not successful. Please install manually and re-run automation script" -ForegroundColor Red
-	exitcode
-    }
-}
-else
-{
-   Write-Host "ImportExcel PS Module is already installed" -ForegroundColor Green
-}
-#>
+Write-Host "Input Section "   -ForegroundColor Green
 
   
 
-# Read the input config Excel and validate
+# Read the input config CSV and validate
 $inputfile = $PSScriptRoot+"\CMF_PostgreSQL_Server_Input_file.csv"
 Write-Host "Input file is $inputfile." -ForegroundColor Green
 Write-Host "======================================================================================="
@@ -202,8 +144,8 @@ if (-not(Test-Path -Path $inputfile -PathType Leaf)) {
 else
 {
      try {
-         $sqllist_Read_Excel = Import-Csv -Path $inputfile #-WorksheetName Server_List
-         $Approved_Rows = $sqllist_Read_Excel | Where-Object { $_.Approval_Status.toupper() -eq "YES" }
+         $sqllist_Read_CSV = Import-Csv -Path $inputfile #-WorksheetName Server_List
+         $Approved_Rows = $sqllist_Read_CSV | Where-Object { $_.Approval_Status.toupper() -eq "YES" }
 
          $ConfigList = $Approved_Rows | Group-Object -Property 'Host_Name' | ForEach-Object {
     $_.Group | Select-Object -First 1
@@ -245,14 +187,14 @@ exitcode
         ($ColumnList.Contains("Subscription_ID")) -and
         ($ColumnList.Contains("SSL_Mode"))){
 
-        Write-Host "Excel validation is done successfully " 
+        Write-Host "CSV validation is done successfully " 
         }
-     else {Write-Host "There are missmatches in the Excel column . Kindly check and retrigger the automation "  -ForegroundColor Red 
+     else {Write-Host "There are missmatches in the CSV column . Kindly check and retrigger the automation "  -ForegroundColor Red 
            exitCode}
   }
 
 
-    ##Input Excel validation is done
+    ##Input CSV validation is done
 
 
 	Write-Host "=======================================================================================" 
@@ -547,7 +489,7 @@ exitcode
 
 		if ($Output_data -ne "")
 		{
-			#$Output_data | select Host_Name,Status,LOG_File_Location,Error_Msg | Export-Excel $PSScriptRoot\Output\$Host_Name\Server_Status.xlsx -WorksheetName "PostgreSQL_Server" -TableStyle Medium16 -title "PostgreSQL Server Status" -TitleBold    
+			#$Output_data | select Host_Name,Status,LOG_File_Location,Error_Msg | Export-Csv $PSScriptRoot\Output\$Host_Name\Server_Status.xlsx -WorksheetName "PostgreSQL_Server" -TableStyle Medium16 -title "PostgreSQL Server Status" -TitleBold    
 		}
 
 Stop-Transcript
