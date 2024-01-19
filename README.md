@@ -1,3 +1,9 @@
+# Prequisites:
+1. Windows 10, Windows Server 2012, Windows Server 2012 R2 and above
+2. RHEL v7 & above, Ubuntu v7 & above, MacOS 
+3. Azure CLI - Windows - https://aka.ms/installazurecliwindows   
+               Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/
+
 # Steps To-Do:
 
 ## Azure CLI
@@ -14,9 +20,10 @@
 . Please refer to document “CMF-ON-Prem_Server_Info_gather.docx” from the zip folder and share the details.
 
 ## Update CMF_PostgreSQL_Server_Input_file.csv 
- "**Host_Name**","Resource_Group","**Port**","VCore","Auth_Type","**User_ID**","**Password**","**DB_Name**","Tenant","Subscription_ID","**Approval_Status**","SSL_Mode"
+ "**Host_Name**","Resource_Group","**Port**","VCore","Auth_Type","**User_ID**","**Password**","**DB_Name**","Tenant","Subscription_ID","**Approval_Status**","**SSL_Mode**"
+ 
+ Note:- **Mandatory Fields**
 
- Note:- **Mandatory Fields** 
 ## Server Info Gathering:
 1. Execute `powershell.exe .\CMF-PostgreSQL-Windows.ps1` ( Windows )
 2. Execute `pwsh ./CMF-PostgreSQL-Linux.ps1` ( Linux )
