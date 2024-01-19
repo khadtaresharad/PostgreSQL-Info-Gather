@@ -17,7 +17,7 @@
 8. Once the execution completed, you can check the output & Logs folder.
 
 ## Azure VM/On-premises
-. Please refer to document “CMF-ON-Prem_Server_Info_gather.docx” from the zip folder and share the details.
+ Please refer to document “CMF-ON-Prem_Server_Info_gather.docx” from the zip folder and share the details.
 
 ## Update CMF_PostgreSQL_Server_Input_file.csv 
  "**Host_Name**","Resource_Group","**Port**","VCore","Auth_Type","**User_ID**","**Password**","**DB_Name**","Tenant","Subscription_ID","**Approval_Status**","**SSL_Mode**"
