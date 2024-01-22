@@ -1,6 +1,6 @@
 # Pre-requisites:
 1. Windows 10, Windows Server 2012, Windows Server 2012 R2 and above
-2. RHEL v7 & above, Ubuntu v7 & above, MacOS 
+2. RHEL v7 & above, Ubuntu v14 & above, MacOS 
 3. Azure CLI - Windows - https://aka.ms/installazurecliwindows   
                Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/
 
