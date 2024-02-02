@@ -1,8 +1,19 @@
 # Pre-requisites:
-1. Windows 10, Windows Server 2012, Windows Server 2012 R2 and above
-2. RHEL v7 & above, Ubuntu v14 & above, MacOS 
-3. Azure CLI - Windows - https://aka.ms/installazurecliwindows   
-               Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/
+1. Supported Operating System 
+   Windows - Windows 10, Windows Server 2012, Windows Server 2012 R2 and above
+   Linux -  RHEL v7 & above, Ubuntu v14 & above
+
+2. Azure CLI(Install) - 
+   Windows - https://aka.ms/installazurecliwindows   
+   Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/
+
+3. PostgreSQL Client (Install)
+   Windows - https://www.postgresql.org/download/windows/
+   Linux - https://www.postgresql.org/download/linux/
+
+ **Note**: -
+• Add Azure CLI PATH in Environment Variables (e.g. C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin)
+• Add PostgreSQL Client PATH in Environment Variables (e.g. C:\Program Files\PostgreSQL\16\bin)
 
 # Steps To-Do:
 
