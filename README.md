@@ -1,5 +1,5 @@
 # Pre-requisites:
-1. Supported Operating System 
+1. Supported Operating System -
    Windows - Windows 10, Windows Server 2012, Windows Server 2012 R2 and above
    Linux -  RHEL v7 & above, Ubuntu v14 & above
 
@@ -7,7 +7,7 @@
    Windows - https://aka.ms/installazurecliwindows   
    Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/
 
-3. PostgreSQL Client (Install)
+3. PostgreSQL Client (Install) -
    Windows - https://www.postgresql.org/download/windows/
    Linux - https://www.postgresql.org/download/linux/
 
