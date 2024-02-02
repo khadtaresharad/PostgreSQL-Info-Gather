@@ -47,7 +47,7 @@ Write-Host " "
 $folder = $PSScriptRoot
 $today_date=Get-Date -Format "MM_dd_yyyy_HH_mm"
 Write-Host "`n======================================================================================="
-Start-Transcript -path  $folder\Logs\CMF-PostgreSQL-Info-gathering_$today_date.txt  -Append
+Start-Transcript -path  $folder\Logs\CMF-PostgreSQL_Info_Gathering_Automation_Transcript_$today_date.txt  -Append
 Write-Host "`n======================================================================================="
 
 function exitCode
