@@ -3,11 +3,11 @@
    Windows - Windows 10, Windows Server 2012, Windows Server 2012 R2 and above <br />
    Linux -  RHEL v7 & above, Ubuntu v14 & above <br />
 
-2. Azure CLI(Install) - <br />
-   Windows - https://aka.ms/installazurecliwindows <br />  
+2. Azure CLI(Install) <br />
+   Windows - https://aka.ms/installazurecliwindows <br/>  
    Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/ <br />
 
-3. PostgreSQL Client (Install) - <br />
+3. PostgreSQL Client (Install) <br />
    Windows - https://www.postgresql.org/download/windows/ <br />
    Linux - https://www.postgresql.org/download/linux/ <br />
 
