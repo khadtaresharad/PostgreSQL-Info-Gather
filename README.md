@@ -1,5 +1,5 @@
 # Pre-requisites:
-1. Supported Operating System <br />
+1. Supported OS <br />
    Windows - Windows 10, Windows Server 2012, Windows Server 2012 R2 and above <br />
    Linux -  RHEL v7 & above, Ubuntu v14 & above <br />
 
