@@ -3,17 +3,18 @@
    Windows - Windows 10, Windows Server 2012, Windows Server 2012 R2 and above <br />
    Linux -  RHEL v7 & above, Ubuntu v14 & above <br />
 
-2. Azure CLI(Install) <br />
+2. Azure CLI (Install Only for Azure workloads like single server assessments) <br />
    Windows - https://aka.ms/installazurecliwindows <br />
    Linux - https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux/ <br />
 
-3. PostgreSQL Client (Install) <br />
+3. PostgreSQL Client (Install on supported OS ) <br />
    Windows - https://www.postgresql.org/download/windows/ <br />
    Linux - https://www.postgresql.org/download/linux/ <br />
 
  **Note**: - <br />
-• Add Azure CLI PATH in Environment Variables (e.g. C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin) <br />
-• Add PostgreSQL Client PATH in Environment Variables (e.g. C:\Program Files\PostgreSQL\16\bin) <br />
+Add PATH in Enviornment Variables (Windows)<br />
+`Azure CLI  ( e.g. C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin )`<br />
+`PostgreQL Client ( e.g. C:\Program Files\PostgreSQL\bin )<br />`
 
 # Steps To-Do:
 
