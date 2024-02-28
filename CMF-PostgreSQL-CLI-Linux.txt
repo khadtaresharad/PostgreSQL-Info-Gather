@@ -421,8 +421,8 @@ else
   }
   catch
   {
-      thglobal:row $_.Exception.Message  
-      thglobal:row  $_.Exception.Response.StatusCode.Value__
+      throw $_.Exception.Message  
+      throw $_.Exception.Response.StatusCode.Value__
       exitcode
     }
     }
