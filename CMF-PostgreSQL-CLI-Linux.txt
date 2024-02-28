@@ -17,7 +17,7 @@
 #---------------------------------------------------------------------------------------------------------------------------*
 #---------------------------------------------------------------------------------------------------------------------------*
 # Usage:
-# Powershell.exe -File ./CMF-Azure-PostgreSQL-Info-gathering.ps1
+# Powershell.exe -File ./CMF-Azure-CLI-Linux.ps1
 #
 <#
     Change Log
@@ -39,7 +39,7 @@ CLS
 #---------------------------------------------------------PROGRAM BEGINS HERE----------------------------------------------------------
 
 write-host "                                                                            " -BackgroundColor DarkMagenta
-Write-Host "     Welcome to CMF - Azure_PostgreSQL_Info_Gathering_Automation            " -ForegroundColor white -BackgroundColor DarkMagenta
+Write-Host "     Welcome to CMF - PostgreSQL_Info_Gathering_Automation                  " -ForegroundColor white -BackgroundColor DarkMagenta
 write-host "                     (OSS DB Migration Factory)                             " -BackgroundColor DarkMagenta
 write-host "                                                                            " -BackgroundColor DarkMagenta
 Write-Host " "
@@ -47,7 +47,7 @@ Write-Host " "
 $folder = $PSScriptRoot
 $today_date=Get-Date -Format "MM_dd_yyyy_HH_mm"
 Write-Host "`n======================================================================================="
-Start-Transcript -path  $folder/Logs/CMF-Azure-PostgreSQL-Info-gathering_$today_date.txt  -Append
+Start-Transcript -path  $folder/Logs/CMF-PostgreSQL_Info_Gathering_Automation_Transcript_$today_date.txt  -Append
 Write-Host "`n======================================================================================="
 
 function exitCode
@@ -65,7 +65,7 @@ function createFolder([string]$newFolder)
     }
     else
     {
-        New-Item $newFolder -ItemType Directory
+        $cfolder=New-Item $newFolder -ItemType Directory
         Write-Host "-$newFolder folder created..."
     }
 }
@@ -79,7 +79,6 @@ createFolder $folder/Output/Single/
 
 
 # Read the input config CSV and validate
-#$inputfile = $PSScriptRoot+"/CMF_PostgreSQL_Server_Input_file.xlsx" 
 $inputfile = $PSScriptRoot+"/Azure_Subscription.csv"
 Write-Host "Input file is $inputfile " -ForegroundColor Green
 Write-Host "===================================================================="  
@@ -142,14 +141,8 @@ chmod +x $folder/Validation_Scripts/azurecli.ps1
 # Check PowerShell version
 $Validation=@()
 $Outfiledata=@()
-$Outputexcel=@()
-$DBListData=@()
-$AdAdminData=@()
-
-$alldata =@()
-$row=@{}
-$FWData=@()
-$ServerConfigData=@()
+$global:alldata =@()
+$global:row=@{}
 $Validation+=& "$folder/Validation_Scripts/Check_PowerShell_Version.ps1"
 $Validation+=& "$folder/Validation_Scripts/azurecli.ps1"
 
@@ -320,8 +313,11 @@ else
 	    CMF-Read-Array $ser_list
     }
     
-    $Serverdata+=$alldata
-    $alldata=@()
+   $Serverdata+=$global:alldata
+    $global:alldata=@()
+     $count=  $ser_details.count
+    $k=1
+     Write-Host "=============================================================================================================="  
 
   foreach ($i in $ser_details)
   {
@@ -336,12 +332,16 @@ else
       $ser_dom = $dom[0]
       $Logon_User=$Single_User_Name + "@" + $ser_dom
       $vcore=$i.sku.capacity
-
+      $userVisibleState=$i.userVisibleState
+       $per_complete=[math]::round($k/$count*100)
+      Write-Progress -Activity "Server:$ServerName is in Progress..." -Status "$per_complete% Complete:" -PercentComplete $per_complete
+      $k++
       $Outfiledata+=New-Object psobject -Property @{Host_Name=$domain_name;Resource_Group=$ser_rg;Port="5432";VCore=$vcore;Auth_Type="PostgreSQL";User_ID=$Logon_User;Password="";DB_Name="postgres";Tenant=$tenant;Subscription_ID=$Subscription;Approval_Status="No";SSL_Mode="prefer"}
+  if ($userVisibleState -match "Ready")
+  {   
           
     try
     {    
-    #DB List
     
     #$db_list = az postgres db list -g $ser_rg -s $ser_dom  | Out-File $folder/Output/Single/$ServerName/${ServerName}_Single_DB_List.json               
     $dbdata = az postgres db list -g $ser_rg -s $ser_dom | ConvertFrom-Json | ForEach-Object { $_ | Add-Member -MemberType NoteProperty -Name 'Servername' -Value $ServerName -PassThru} | ConvertTo-Json
@@ -353,8 +353,9 @@ else
     {
 	    CMF-Read-Array $db_data
     }
-    $DBList+=$alldata
-    $alldata=@()
+  
+       $DBList+=$global:alldata
+    $global:alldata=@()
 
     #Server Configuration
     
@@ -368,9 +369,10 @@ else
     {
 	    CMF-Read-Array $confdata
     }
-    
-    $ServerConf+=$alldata
-    $alldata=@()
+    $ServerConf+=$global:alldata
+    $global:alldata=@()
+
+
 
     #AD Admin
     
@@ -385,8 +387,8 @@ else
 	    CMF-Read-Array $ADAdmin
     }
      
-    $Admin+=$alldata
-    $alldata=@()
+ $Admin+=$global:alldata
+    $global:alldata=@()
     
     #Firewall Rule
     
@@ -400,8 +402,8 @@ else
     {
 	    CMF-Read-Array $FWList
     }
-    $Firewall+=$alldata
-    $alldata=@()
+     $Firewall+=$global:alldata
+    $global:alldata=@()
 
     #Replica List
     
@@ -413,36 +415,48 @@ else
     {
 	    CMF-Read-Array $Replica_List
     }
-    $Replica+=$alldata
-    $alldata=@()
+    $Replica+=$global:alldata
+    $global:alldata=@()
     
   }
   catch
   {
-      throw $_.Exception.Message  
-      throw  $_.Exception.Response.StatusCode.Value__
+      thglobal:row $_.Exception.Message  
+      thglobal:row  $_.Exception.Response.StatusCode.Value__
       exitcode
+    }
+    }
+      else
+      {
+      Write-Host "PostgreSQL Single server [$ServerName] is in ""$userVisibleState"" state, Database(s) information can't be captured for [$ServerName]." -ForegroundColor Red
       }
       }
-    $Serverdata| ForEach-Object {[PSCustomObject]$_}  | Export-CSV -Path $PSScriptRoot/Output/Server_List.csv 
-    $DBList| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot/Output/DB_Details.csv
-    $ServerConf| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot/Output/Configuration_Data.csv
-    $Admin| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot/Output/AD_Admin.csv
-    $Firewall| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot/Output/FW_List.csv
-    $Replica| ForEach-Object {[PSCustomObject]$_} | Export-CSV -Path $PSScriptRoot/Output/Replica_List.csv
 
-
+    $Serverdata| ForEach-Object {[PSCustomObject]$_}  | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Server_List.csv
+    $DBList| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/DB_Details.csv
+    $ServerConf| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Configuration_Data.csv
+    $Admin| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/AD_Admin.csv
+    $Firewall| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/FW_List.csv
+    $Replica| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Replica_List.csv
+     if($Outfiledata -ne $null){
+    $Outfiledata | select Host_Name,Resource_Group,Port,VCore,Auth_Type,User_ID,Password,DB_Name,tenant,Subscription_ID,Approval_Status,SSL_Mode | Export-Csv -NoTypeInformation $PSScriptRoot/CMF_PostgreSQL_Server_Input_file.csv
+    }
     Write-Host "=============================================================================================================="  
-    Write-Host "Information gathered ==> $folder/Output/Single/ " -ForegroundColor Green -BackgroundColor Black
-    Write-Host "Output file created ==> $PSScriptRoot/Output/Output.csv " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "Information gathered ==> $folder/Output/ " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "PostgreSQL Server List created ==> $PSScriptRoot/CMF_PostgreSQL_Server_Input_file.csv " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "Update mandatory fields along with ""Approval_Status"" column in above CSV and execute script ""CMF-PostgreSQL-Windows.ps1"" to gather database level info." -ForegroundColor Yellow -BackgroundColor Black
     Write-Host "==============================================================================================================" 
   
-    if($Outfiledata -ne $null){
-    $Outfiledata | select Host_Name,Resource_Group,Port,VCore,Auth_Type,User_ID,Password,DB_Name,tenant,Subscription_ID,Approval_Status,SSL_Mode | Export-Csv $PSScriptRoot/Server_List.csv
-    $originalCsvFilePath = "$PSScriptRoot/Server_List.csv"
-    $newCsvFilePath = "$PSScriptRoot/CMF_PostgreSQL_Server_Input_file.csv"
-    $content = Get-Content -Path $originalCsvFilePath
-    $content | Set-Content -Path $newCsvFilePath
-    }
-    
+   
+$filenames = 'AD_Admin.csv', 'Configuration_Data.csv', 'DB_Details.csv', 'FW_List.csv','Replica_List.csv','Server_List.csv','Single_Server_List.json'
+foreach ($filename in $filenames) {
+$found=$false; 
+Get-ChildItem -Path $PSScriptRoot/Output/ -Recurse | ForEach-Object {if($filename -eq $_.Name) {$found=$true;CONTINUE}$found=$false;}-End { if($found -ne $true) { Write-Host 'FILE ' $filename ' missing in the folder.' -foregroundcolor red}
+ }
+ }
+ If(-Not(Test-Path $PSScriptRoot/CMF_PostgreSQL_Server_Input_file.csv))
+ {
+ Write-Host 'FILE ' CMF_PostgreSQL_Server_Input_file.csv ' missing in the folder.' -foregroundcolor red
+ }
 }  
+exitcode

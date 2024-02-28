@@ -17,7 +17,7 @@
 #---------------------------------------------------------------------------------------------------------------------------*
 #---------------------------------------------------------------------------------------------------------------------------*
 # Usage:
-# Powershell.exe -File ./CMF-PostgreSql_Server_Automation_V1.1.ps1
+# pwsh ./CMF-PostgreSql_Linux.ps1
 #
 #change Log 31st July 2023 Sireesha Error Handling and PSQL validation 
 #change Log 10th Oct 2023 Lekshmy : Added Option 2 for detailed info gathering and output format for option 1 to CSV multiple workbooks
@@ -27,6 +27,7 @@ CLS
 
   function exitCode{
     Write-Host "-Ending Execution"
+    Stop-Transcript
     exit
 }
 
@@ -37,7 +38,7 @@ function createFolder([string]$newFolder) {
     }
     else
     {
-        New-Item $newFolder -ItemType Directory
+        $Cfolder=New-Item $newFolder -ItemType Directory
         Write-Host "-$newFolder folder created..."
     }
 }
@@ -45,11 +46,11 @@ function createFolder([string]$newFolder) {
 $folder = $PSScriptRoot
 $Triggerpsql_File_Path=$Folder+"/Trigger_psql.bat"
 $date = Get-Date -Format "yy-dd-MM-hh-mm"
-$Log_Name= $Host_Name.replace(".", "_")
 $DbGather_Path=$Folder+"/PostgreSQL_Templates/pg_db_gather_db.sql"
 $DbGather_Server_Path=$Folder+"/PostgreSQL_Templates/pg_db_gather_server.sql"
 $DetailedInfo_Path=$Folder+"/PostgreSQL_Templates/pg_db_maintenance.sql"
 $DbList_path=$Folder+"/PostgreSQL_Templates/DB_List.sql"
+$today_date=Get-Date -Format "MM_dd_yyyy_HH_mm"
 
 
 
@@ -58,16 +59,70 @@ $DbList_path=$Folder+"/PostgreSQL_Templates/DB_List.sql"
 
 CLS
 write-host "                                                                                       " -BackgroundColor DarkMagenta
-Write-Host "       Welcome to CMF - PostgreSQL_Server_Info_Gathering_Automation                    " -ForegroundColor white -BackgroundColor DarkMagenta
+Write-Host "       Welcome to CMF - PostgreSQL_Info_Gathering_Automation                           " -ForegroundColor white -BackgroundColor DarkMagenta
 write-host "                  (OSS DB Migration factory)                                           " -BackgroundColor DarkMagenta
 write-host "                                                                                       " -BackgroundColor DarkMagenta
 Write-Host " "
+Write-Host "===================================================================="
+Start-Transcript -path  $folder/Logs/CMF-PostgreSQL_Info_Gathering_Automation_Transcript_$today_date.txt  -Append
+Write-Host "===================================================================="
 
+createFolder $folder/Downloads/
+createFolder $folder/Output/
+Write-Host "===================================================================="
+
+
+  $psql_Log_File=$Folder+"/Output/psql_validation.log"
+    $errpsql_Log_File=$Folder+"/Output/psql_validation.err"
+    $psqlCommand="psql --version"
+    Invoke-Expression "$psqlCommand 2>&1 | Out-File -FilePath $psql_Log_File"
+    $stat = $LASTEXITCODE
+   # Write-Output "Last operation status: $stat"
+    If( $stat -ne 0)
+    {
+       # seems to have failed
+       Write-Host "Failed to validate psql location" -ForegroundColor RED
+       $errorMessage = $Error[0].Exception.Message
+       $errorMessage | Out-File -FilePath $errpsql_Log_File -Append
+       $error_m=Get-content -path $errpsql_Log_File | out-string
+       continue
+    }
+
+    $error_msg=Get-content -path $psql_Log_File | out-string
+    
+    $error_msg1=$error_msg.tolower()
+
+    if (Test-Path $psql_Log_File) {
+    
+    if ($error_msg1 -like ("*is not recognized as an internal or external command*")){
+    #Write-host $path_check -ForegroundColor red
+    write-host "Either Postgresql client tool is not installed on the server or psql Path is not set in environment variable" -ForegroundColor red 
+    write-host ""
+    write-host "Please configure as appropriate and re-run automation script"
+    exitcode
+    }
+    else
+    {
+        Write-host "Psql validated successfully"  -ForegroundColor green
+    }
+    
+
+    }else
+    {
+        write-host "Error in validating psql" -ForegroundColor red
+        Write-Host "Please check and re-run the script"
+        exitcode
+    }
+ 
+    Remove-Item $psql_Log_File
+
+Write-Host "===================================================================="
 Write-Host "Please select the assessment operation to perform" -ForegroundColor Green
 Write-Host "===================================================================="
 Write-Host "1. Perform PostgreSQL server Information gathering"
 Write-Host "2. Perform Detailed Information gathering "
 Write-Host "3. Exit"
+
 
 $validInputs = "1", "2", "3"
 do {
@@ -110,17 +165,16 @@ if ($response -eq "n")
 Write-Host "======================================================================================= "
 }
 
-$today_date=Get-Date -Format "MM_dd_yyyy_HH_mm"
-Start-Transcript -path  $folder/Logs/CMF_PostgreSQL_Server_Info_Gathering_Automation_Transcript_$today_date.txt -Append
+
+
+
+
+
 
 Write-Host "======================================================================================= "
-createFolder $folder/Downloads/
-createFolder $folder/Output/
 
-Write-Host ""
-Write-Host "======================================================================================= "
-Write-Host "Input Section "   -ForegroundColor Green
 
+  
 
 # Read the input config CSV and validate
 $inputfile = $PSScriptRoot+"/CMF_PostgreSQL_Server_Input_file.csv"
@@ -216,7 +270,7 @@ exitcode
     
     }until ($validInputs_Yes_No.Contains($response1.ToLower()))
 
-    if ($response -eq "n")
+    if ($response1 -eq "n")
     {
         exitcode
     }          
@@ -230,6 +284,7 @@ exitcode
 	foreach ($row_Content in $ConfigList)
 	{
 		$Host_Name=$row_Content.'Host_Name'
+        $Log_Name= $Host_Name.replace(".", "_")
 		if ([string]::IsNullOrWhitespace($Host_Name)){
 			Write-Host "'Host_Name' is not valid in the Server_List worksheet. Kindly check and retrigger the automation  "  -ForegroundColor Red 
 			Continue
@@ -243,8 +298,13 @@ exitcode
 	
 		$Password=$row_Content.'Password'
 		if ([string]::IsNullOrWhitespace($Password)){
-			Write-Host "'Password' is not valid in the Server_List worksheet. Kindly check and retrigger the automation  "  -ForegroundColor Red 
-			Continue
+            $credentials = Get-Credential -UserName $User_ID -Message "Please provide valid credentials for $Host_Name"
+            $Password = $credentials.GetNetworkCredential().Password
+            if ([string]::IsNullOrWhitespace($Password)){
+                Write-Host "'Password' is not valid in the Server_List worksheet. Kindly check and retrigger the automation  "  -ForegroundColor Red 
+                Continue
+            }
+			
 		}
 
 		$DB_Name=$row_Content.'DB_Name'
@@ -270,18 +330,16 @@ exitcode
     
     $DBList_Log_File=$Folder+"/Output/$Host_Name/"+$Global:project_name+"_"+$Host_name+"$DBName.log"
     $errDBList_Log_File=$Folder+"/Output/$Host_Name/"+$Global:project_name+"_"+$Host_name+"$DBName.err"
-    createFolder $Folder/Output/$Host_Name
+    	Write-Host "=======================================================================================" 
 
-    #Validating psql
-    #Write-Host "Checking for PSQL path" -ForegroundColor white
-    #$psql_validdation_file_path=$Folder+"/psql_validation.bat"
+    createFolder $Folder/Output/$Host_Name
+<#
     $psql_Log_File=$Folder+"/Output/$Host_Name/psql_validation.log"
     $errpsql_Log_File=$Folder+"/Output/$Host_Name/psql_validation.err"
-    # $psql_OP = Start-Process -FilePath $psql_validdation_file_path  -ArgumentList "$psql_Log_File"-Wait -WindowStyle Hidden
     $psqlCommand="psql --version"
     Invoke-Expression "$psqlCommand 2>&1 | Out-File -FilePath $psql_Log_File"
     $stat = $LASTEXITCODE
-    Write-Output "Last operation status: $stat"
+   # Write-Output "Last operation status: $stat"
     If( $stat -ne 0)
     {
        # seems to have failed
@@ -317,24 +375,10 @@ exitcode
         Write-Host "Please check and re-run the script"
         exitcode
     }
-    #Write-host ""
-
+ 
     Remove-Item $psql_Log_File
-    <#$validInputs_Yes_No = @("y", "n","Y","N")
-     
-    Write-Host    "Please press Y to continue PostgreSQL Info-Gathering .Press N to terminate the execution " -ForegroundColor Green
-    Write-Host "======================================================================================="
-    
-    do {
-    $response = read-host "Please provide your inputs"
-    if(-not $validInputs_Yes_No.Contains($response)){write-host "Please Enter a valid input (Y or N )"}
-    
-    }until ($validInputs_Yes_No.Contains($response.ToLower()))
-
-    if($response -eq "n"){exitcode}    
-    	##### Initiating Server info gathering
-    #>
-	$ServerAutomation = "1"
+ #>
+ 	$ServerAutomation = "1"
 	if($ServerAutomation.Contains($taskToPerform))
 	{
 
@@ -353,7 +397,7 @@ exitcode
                 $psqlCommand="psql --username=$User_ID --host=$Host_Name --port=$Port --file=$DbList_path $escapedDBCommand"
                 Invoke-Expression "$psqlCommand 2>&1 | Out-File -FilePath $DBList_Log_File"
                 $stat = $LASTEXITCODE
-                Write-Output "Last operation status: $stat"
+                #Write-Output "Last operation status: $stat"
                 If( $stat -ne 0)
                 {
                    # seems to have failed
@@ -388,8 +432,8 @@ exitcode
 			$PostGres_DB_Name=$PostGres_DB_Name.Trim()
         
 			#Capturing server details
-			Write-host "Initiating Info-Gathering for  $Host_Name : $PostGres_DB_Name Database" -ForegroundColor Green
-                        Write-Host $Global:project_name -ForegroundColor Magenta
+			Write-host "Initiating Info-Gathering for $Host_Name : $PostGres_DB_Name Database" -ForegroundColor Green
+                        #Write-Host $Global:project_name -ForegroundColor Magenta
 			$DBlogfile=$Folder+"/Output/$Host_Name/" + $Global:project_name+ "_" + $Host_Name + "_" + $PostGres_DB_Name +".log"
                         $errDBlogfile=$Folder+"/Output/$Host_Name/" + $Global:project_name+ "_" + $Host_Name + "_" + $PostGres_DB_Name +".err"
                         $OutputFile=$Folder+"/Output/$Host_Name/Output_$Host_Name_$PostGres_DB_Name.log"
@@ -491,5 +535,5 @@ exitcode
 			#$Output_data | select Host_Name,Status,LOG_File_Location,Error_Msg | Export-Csv $PSScriptRoot/Output/$Host_Name/Server_Status.xlsx -WorksheetName "PostgreSQL_Server" -TableStyle Medium16 -title "PostgreSQL Server Status" -TitleBold    
 		}
 
-Stop-Transcript
+
 exitcode
