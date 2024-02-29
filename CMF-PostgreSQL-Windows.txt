@@ -17,7 +17,7 @@
 #---------------------------------------------------------------------------------------------------------------------------*
 #---------------------------------------------------------------------------------------------------------------------------*
 # Usage:
-# Powershell.exe -File .\CMF-PostgreSql_Server_Automation_V1.1.ps1
+# Powershell.exe -File .\CMF-PostgreSQL-Windows.ps1
 #
 #change Log 31st July 2023 Sireesha Error Handling and PSQL validation 
 #change Log 10th Oct 2023 Lekshmy : Added Option 2 for detailed info gathering and output format for option 1 to CSV multiple workbooks
