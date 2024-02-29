@@ -17,7 +17,7 @@
 #---------------------------------------------------------------------------------------------------------------------------*
 #---------------------------------------------------------------------------------------------------------------------------*
 # Usage:
-# pwsh ./CMF-PostgreSql_Linux.ps1
+# pwsh ./CMF-PostgreSQL-Linux.ps1
 #
 #change Log 31st July 2023 Sireesha Error Handling and PSQL validation 
 #change Log 10th Oct 2023 Lekshmy : Added Option 2 for detailed info gathering and output format for option 1 to CSV multiple workbooks
