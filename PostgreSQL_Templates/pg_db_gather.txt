@@ -79,7 +79,7 @@ This script gathers the following details and NO user database data is accessed:
 11.	PARTITIONED DETAILS INFO
 12.	REFERENCE CONSTRAINTS INFO
 13.	TABLE NOT HAVING PRIMARY KEY INFO
-14.	TABLE COUNT >= 1000000 WITHOUT BIGINT or INT INDEX INFO
+14.	TABLE COUNT >= 10000000 WITHOUT BIGINT or INT INDEX INFO
 
 Note: This data is used only for supporting Azure migration/related activities.
 
@@ -270,7 +270,7 @@ ORDER BY 1,2,3;
 
 Select 'TABLE NOT HAVING PRIMARY KEY INFO END' as "Query_Description",CURRENT_TIMESTAMP;
 
-Select 'TABLE COUNT > 1000000 WITHOUT BIGINT or INT INDEX INFO BEGIN' as "Query_Description",CURRENT_TIMESTAMP;
+Select 'TABLE COUNT > 10000000 WITHOUT BIGINT or INT INDEX INFO BEGIN' as "Query_Description",CURRENT_TIMESTAMP;
 
 SELECT current_database() as current_db, n.nspname as schema_name,c.relname as "No int/bigint data-type single column Primary/unique index"
 FROM pg_catalog.pg_class c
