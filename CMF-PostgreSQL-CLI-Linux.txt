@@ -313,12 +313,18 @@ else
 	    CMF-Read-Array $ser_list
     }
     
-   $Serverdata+=$global:alldata
+    $Serverdata+=$global:alldata
     $global:alldata=@()
-     $count=  $ser_details.count
+    $count=  $ser_details.count
     $k=1
-     Write-Host "=============================================================================================================="  
-
+    Write-Host "=============================================================================================================="  
+    if ($count -eq 0)
+    {
+    Write-Host "There is no PostgreSQL single server on Subscription [$Subscription] for Tenant [$tenant]" -ForegroundColor Red
+    Write-host "Please check Subscription on input file: Azure_Subscription.csv" -ForegroundColor Red
+    Write-Host "=============================================================================================================="  
+    exitCode
+    }
   foreach ($i in $ser_details)
   {
            
