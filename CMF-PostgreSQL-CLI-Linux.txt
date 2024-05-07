@@ -3,7 +3,7 @@
 #  Schedule       : Ad-Hoc / On-Demand
 #  Date           : 19-July-2023
 #  Author         : Rackimuthu Kandaswamy , Sireesha , ArunKumar , Saby , Lekshmy MK
-#  Version        : 1.1
+#  Version        : 2.1
 #   
 #  INPUT          : NONE
 #  VARIABLE       : NONE
@@ -29,6 +29,7 @@
 •	Incorporated servername in DB_List, Config_Details,AD Admin and Firewall-rule List  CLI commands output in output.xlsx
 •	No column Filter applied when exporting AZURE CLI Commands output to output.xlsx file
 •	Included az postgres server replica list CLI
+•	Included Multi-Subscription support
 
         
 #>
