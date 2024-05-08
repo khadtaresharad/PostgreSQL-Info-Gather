@@ -3,7 +3,7 @@
 #  Schedule       : Ad-Hoc / On-Demand
 #  Date           : 19-July-2023
 #  Author         : Rackimuthu Kandaswamy , Sireesha , ArunKumar , Saby , Lekshmy MK
-#  Version        : 1.1
+#  Version        : 2.1
 #   
 #  INPUT          : NONE
 #  VARIABLE       : NONE
@@ -29,6 +29,7 @@
 •	Incorporated servername in DB_List, Config_Details,AD Admin and Firewall-rule List  CLI commands output in output.xlsx
 •	No column Filter applied when exporting AZURE CLI Commands output to output.xlsx file
 •	Included az postgres server replica list CLI
+•	Included Multi-Subscription support
 
         
 #>
@@ -274,17 +275,32 @@ If($Validation.Status.Contains("FAILED"))
 	    }
     }
 
-
-#AZ login to corresponsing Tenant and subscription
-
-$loginoutput=az login --tenant $tenant --only-show-errors
-if (!$loginoutput) 
+$tenant=$ConfigList.Tenant|Get-Unique
+if ([string]::IsNullOrWhitespace($tenant)){
+Write-Host "Tenant listed Azure_Subscription worksheet is not valid. Kindly check and retrigger the automation  "  -BackgroundColor Red 
+exitCode
+}
+elseif($tenant.count -gt 1)
 {
-    Write-Error "Error connecting to Tenant: $tenant and Subscription: $Subscription"
-    exitcode
+Write-Host "Azure_Subscription.csv has multiple Tenant. This script doesn't support multiple Tenant but you can add multiple Subscription. `nKindly check and retrigger the automation for each Tenant separately."  -BackgroundColor Red 
+exitCode
+
 }
 else
 {
+#AZ login to corresponsing Tenant and subscription
+$loginoutput=az login --tenant $tenant --only-show-errors
+}
+
+if (!$loginoutput) 
+{
+    Write-Error "Error connecting to Tenant: $tenant"
+    exitcode
+}
+$Subscriptions= $ConfigList.Subscription_ID|Sort-Object -Unique
+
+      foreach ($Subscription in $Subscriptions)
+  {
     $Serverdata=@()
     $db_data=@()
     $DBList=@()
@@ -298,12 +314,21 @@ else
     $MSDef=@()
     $SerEnd=@()
     $dbdata=@()
+    
+if ([string]::IsNullOrWhitespace($Subscription)){
+Write-Host "$Subscription is not valid in the Azure_Subscription worksheet. Kindly check and retrigger the automation  "  -BackgroundColor Red 
+continue
+} 
 
+
+    Write-Host "==============================================================================================================" 
+    Write-Host "Processing Subscription: $Subscription" -ForegroundColor Green
     #AZ Connect to provided subscription
-    az account set --subscription $Subscription
+     az account set --subscription $Subscription
+
      
     #Server list fetch for Single Server
-    $Single_list_Out = az postgres server list | Out-File $folder/Output/Single/Single_Server_List.json 
+    $Single_list_Out = az postgres server list | Out-File $folder/Output/Single/Single_Server_List.json -Append
     
     $ser_details = az postgres server list|ConvertFrom-Json
       
@@ -325,8 +350,8 @@ else
     {
     Write-Host "There is no PostgreSQL single server on Subscription [$Subscription] for Tenant [$tenant]" -ForegroundColor Red
     Write-host "Please check Subscription on input file: Azure_Subscription.csv" -ForegroundColor Red
-    Write-Host "=============================================================================================================="  
-    exitCode
+    #Write-Host "=============================================================================================================="  
+    #exitCode
     }
   foreach ($i in $ser_details)
   {
@@ -334,7 +359,6 @@ else
       #Updating input file with server details
       $ServerName= $i.name
       $Single_User_Name = $i.administratorLogin
-      #createFolder $folder/Output/Single/$ServerName/
       $ser_rg = $i.resourceGroup  
       $domain_name = $i.fullyQualifiedDomainName
       $dom = $domain_name.Split(".")
@@ -483,18 +507,19 @@ else
       }
       }
 
-    $Serverdata| ForEach-Object {[PSCustomObject]$_}  | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Server_List.csv
-    $DBList| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/DB_Details.csv
-    $ServerConf| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Configuration_Data.csv
-    $Admin| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/AD_Admin.csv
-    $Firewall| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/FW_List.csv
-    $Replica| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Replica_List.csv
-    $CMKey| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/CMK_List.csv
-    $MSDef| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/MSDef_List.csv
-    $SerEnd| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/SerEnd_List.csv
+    $Serverdata| ForEach-Object {[PSCustomObject]$_}  | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Server_List.csv -Append
+    $DBList| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/DB_Details.csv -Append
+    $ServerConf| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Configuration_Data.csv -Append
+    $Admin| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/AD_Admin.csv -Append
+    $Firewall| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/FW_List.csv -Append
+    $Replica| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/Replica_List.csv -Append
+    $CMKey| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/CMK_List.csv -Append
+    $MSDef| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/MSDef_List.csv -Append
+    $SerEnd| ForEach-Object {[PSCustomObject]$_} | Export-CSV -NoTypeInformation -Path $PSScriptRoot/Output/SerEnd_List.csv -Append
 
     if($Outfiledata -ne $null){
     $Outfiledata | select Host_Name,Resource_Group,Port,VCore,Auth_Type,User_ID,Password,DB_Name,tenant,Subscription_ID,Approval_Status,SSL_Mode | Export-Csv -NoTypeInformation $PSScriptRoot/CMF_PostgreSQL_Server_Input_file.csv
+    }
     }
     Write-Host "=============================================================================================================="  
     Write-Host "Information gathered ==> $folder/Output/ " -ForegroundColor Green -BackgroundColor Black
@@ -513,5 +538,5 @@ Get-ChildItem -Path $PSScriptRoot/Output/ -Recurse | ForEach-Object {if($filenam
  {
  Write-Host 'FILE ' CMF_PostgreSQL_Server_Input_file.csv ' missing in the folder.' -foregroundcolor red
  }
-}  
+ 
 exitcode

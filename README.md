@@ -7,6 +7,9 @@ Linux RHEL v7 or later , Ubuntu v14 or later<br />
 
 **Pre-requisites**<br />
 
+Execute below prior running Powershell scripts<br />
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy bypass
+
 ***Windows***<br />
 Powershell -   https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4<br /> 
 PostgreSQL Client - https://www.postgresql.org/download/windows/ <br />
